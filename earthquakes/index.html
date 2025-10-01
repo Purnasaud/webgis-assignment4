@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>USGS Earthquakes – Last 24 hours</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+  <link href="./style.css" rel="stylesheet"/>
+</head>
+<body>
+  <header>
+    <span class="badge">Earthquakes</span>
+    <div class="title">USGS Earthquakes – Past Day (styled by magnitude)</div>
+  </header>
+  <div id="map"></div>
+  <div class="control-footer" id="status">Loading…</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

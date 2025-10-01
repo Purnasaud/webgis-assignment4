@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Live Weather Map – NEXRAD + NWS Alerts</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+  <link href="./style.css" rel="stylesheet"/>
+  <style>
+    /* Extra minimal print-safe CSS for legend if needed */
+    @media print { header, .control-footer { display:none } }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">Weather</span>
+    <div class="title">Live NEXRAD Radar + NWS Alerts (Leaflet)</div>
+  </header>
+  <div id="map"></div>
+  <div class="control-footer" id="status">Loading…</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
