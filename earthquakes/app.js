@@ -1,4 +1,3 @@
-
 // EARTHQUAKE MAP
 const statusEl = document.getElementById('status');
 
@@ -15,10 +14,11 @@ const base_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/
   attribution: '&copy; OpenStreetMap, &copy; CARTO'
 });
 
+// Default map now Positron
 const map = L.map('map', {
   center:[20,0],
   zoom:2,
-  layers:[base_DarkMatter],
+  layers:[base_Positron],  
   worldCopyJump:true
 });
 
@@ -78,6 +78,7 @@ async function loadEQ(){
 }
 loadEQ();
 
+// Base Layers
 const baseLayers = {
   'CARTO Positron (light)': base_Positron,
   'CARTO Dark Matter': base_DarkMatter,
