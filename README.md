@@ -14,10 +14,11 @@ Use VS Code Live Server.
 
 ## Deploy on GitHub Pages
 
-4. In your README, link to the pages using relative URLs:  
-   - Weather map can be viewed: `https://purnasaud.github.io/webgis-assignment4/weather/`  
-   - Earthquakes map can be viewed: `https://purnasaud.github.io/webgis-assignment4/earthquakes/`  
-   - Bonus unified hazard map can be viewed: `https://purnasaud.github.io/webgis-assignment4/bonus-combined/`  
+## 4. Live Demo Links
+
+- [Weather Map](https://purnasaud.github.io/webgis-assignment4/weather/)
+- [Earthquakes Map](https://purnasaud.github.io/webgis-assignment4/earthquakes/)
+- [Bonus Unified Hazard Map](https://purnasaud.github.io/webgis-assignment4/bonus-combined/)
 
 ## Notes
 - Basemaps from **CARTO** (Positron/DarkMatter) were chosen to maximize contrast for radar & alert polygons.  
