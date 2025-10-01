@@ -1,11 +1,10 @@
 # WebGIS Assignment 4 – Leaflet + Open Data
 
 **Author:** Purna Saud  
-**Course:** WebGIS  
-
+**Course:** Web Mapping and Internet GIS (GIST-5300-40)
 ---
 
-## 📌 Overview
+##  Overview
 This assignment demonstrates the use of **Leaflet.js** and open geospatial data services to design, implement, and publish interactive web maps.  
 The project consists of three maps:
 
@@ -17,7 +16,7 @@ Each map includes cartographically thoughtful basemaps, dynamic legends, layer c
 
 ---
 
-## 🖥️ How to View Locally
+## How to View Locally
 1. Clone or download this repository.  
 2. Open the project in VS Code (or any code editor).  
 3. Use the **Live Server** extension to run `index.html` in each subfolder:
@@ -36,6 +35,6 @@ Deployed via **GitHub Pages** for direct online access:
 
 ---
 
-## 🔧 Technical Details
+## Technical Details
 - **Framework:** [Leaflet.js](https://leafletjs.com/)  
 - **Basemaps:** CARTO Positron (light) and DarkMatter (dark), optimized for contrast with overlay data.
