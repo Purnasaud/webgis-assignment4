@@ -1,27 +1,41 @@
 # WebGIS Assignment 4 – Leaflet + Open Data
 
-This repository contains three web maps built with **Leaflet**:
+**Author:** Purna Saud  
+**Course:** WebGIS  
 
-- **Weather Map:** Live NEXRAD radar (WMS) + active **NWS Alerts** styled by severity.  
-   `weather/index.html`  
-- **Earthquakes Map:** USGS all‑day GeoJSON feed with magnitude‑scaled circle markers, popups and legend.  
-   `earthquakes/index.html`  
-- **Bonus task – Unified Hazard Map:** A single map with a **toggle control** to switch between Weather Alerts and Earthquakes (plus optional Radar).  
-   `bonus-combined/index.html`  
+---
 
-## How to view locally
-Use VS Code Live Server.
+## 📌 Overview
+This assignment demonstrates the use of **Leaflet.js** and open geospatial data services to design, implement, and publish interactive web maps.  
+The project consists of three maps:
 
-## Deploy on GitHub Pages
+1. **Weather Map** – Integrates a live NEXRAD radar layer (WMS) with active **NWS Alerts**, styled by severity.  
+2. **Earthquakes Map** – Displays the **USGS all-day earthquake feed** with circle markers scaled and colored by magnitude, along with interactive popups and a magnitude legend.  
+3. **Bonus Task: Unified Hazard Map** – A combined application with a **custom toggle control** to switch between Weather Alerts (with optional Radar) and Earthquakes.  
 
-## 4. Live Demo Links
+Each map includes cartographically thoughtful basemaps, dynamic legends, layer controls, scale bars, and accessible popups to enhance usability and design.
 
-- [Weather Map](https://purnasaud.github.io/webgis-assignment4/weather/)
-- [Earthquakes Map](https://purnasaud.github.io/webgis-assignment4/earthquakes/)
-- [Bonus Unified Hazard Map](https://purnasaud.github.io/webgis-assignment4/bonus-combined/)
+---
 
-## Notes
-- Basemaps from **CARTO** (Positron/DarkMatter) were chosen to maximize contrast for radar & alert polygons.  
-- Alerts are fetched from the official NWS endpoint `https://api.weather.gov/alerts/active`.  
-- Earthquakes are fetched from **USGS** `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson`.  
-- All maps include legends, layer controls, scale bars, accessible popups, and a glass‑morphism UI for clarity.
+## 🖥️ How to View Locally
+1. Clone or download this repository.  
+2. Open the project in VS Code (or any code editor).  
+3. Use the **Live Server** extension to run `index.html` in each subfolder:
+   - `weather/index.html`
+   - `earthquakes/index.html`
+   - `bonus-combined/index.html`
+
+---
+
+## 🌐 Live Demo (GitHub Pages)
+Deployed via **GitHub Pages** for direct online access:
+
+- 🌦️ [Weather Map](https://purnasaud.github.io/webgis-assignment4/weather/)  
+- 🌍 [Earthquakes Map](https://purnasaud.github.io/webgis-assignment4/earthquakes/)  
+- ⚡ [Bonus Unified Hazard Map](https://purnasaud.github.io/webgis-assignment4/bonus-combined/)  
+
+---
+
+## 🔧 Technical Details
+- **Framework:** [Leaflet.js](https://leafletjs.com/)  
+- **Basemaps:** CARTO Positron (light) and DarkMatter (dark), optimized for contrast with overlay data.
