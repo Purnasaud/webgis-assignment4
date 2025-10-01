@@ -1,4 +1,3 @@
-
 // BONUS: unified map with toggles
 const statusEl = document.getElementById('status');
 
@@ -56,20 +55,42 @@ const quakes = L.geoJSON(null,{
   onEachFeature:onEachEQ
 });
 
+// Store counts
+let alertCount = 0;
+let quakeCount = 0;
+
 // Loaders
-async function loadAlerts(){
-  const url='https://api.weather.gov/alerts/active?status=actual&message_type=alert&limit=500';
-  const res=await fetch(url,{headers:{'Accept':'application/geo+json'}});
-  const gj=await res.json(); alerts.clearLayers(); alerts.addData(gj);
+async function loadAlerts() {
+  const url = "https://api.weather.gov/alerts/active";
+  try {
+    const res = await fetch(url, { headers: { "Accept": "application/geo+json" } });
+    const gj = await res.json();
+    alerts.clearLayers();
+    alerts.addData(gj);
+    alertCount = gj.features?.length || 0;
+  } catch (err) {
+    console.error(err);
+    alertCount = 0;
+  }
 }
+
 async function loadQuakes(){
-  const url='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
-  const res=await fetch(url); const gj=await res.json(); quakes.clearLayers(); quakes.addData(gj);
+  try {
+    const url='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
+    const res=await fetch(url); const gj=await res.json(); 
+    quakes.clearLayers(); quakes.addData(gj);
+    quakeCount = gj.features?.length || 0;
+  } catch (err){
+    console.error(err);
+    quakeCount = 0;
+  }
 }
+
 async function init(){
   statusEl.textContent='Loading alerts and earthquakes…';
   await Promise.all([loadAlerts(), loadQuakes()]);
-  statusEl.textContent='Use the toggle to switch layers.';
+  // After load, default to weather alerts display
+  statusEl.textContent = `Active alerts: ${alertCount}`;
 }
 init();
 
@@ -90,12 +111,14 @@ const Toggle = L.Control.extend({
       if(!map.hasLayer(alerts)) alerts.addTo(map);
       if(!map.hasLayer(radarWMS)) radarWMS.addTo(map);
       if(map.hasLayer(quakes)) map.removeLayer(quakes);
+      statusEl.textContent = `Active alerts: ${alertCount}`;
     }
     function showQuakes(){
       btnQuakes.classList.add('active'); btnWeather.classList.remove('active');
       if(!map.hasLayer(quakes)) quakes.addTo(map);
       if(map.hasLayer(alerts)) map.removeLayer(alerts);
       if(map.hasLayer(radarWMS)) map.removeLayer(radarWMS);
+      statusEl.textContent = `Earthquakes (24h): ${quakeCount}`;
     }
     btnWeather.onclick = (e)=>{ e.preventDefault(); showWeather(); };
     btnQuakes.onclick  = (e)=>{ e.preventDefault(); showQuakes();  };

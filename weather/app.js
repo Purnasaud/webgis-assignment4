@@ -82,24 +82,23 @@ const alertsLayer = L.geoJSON(null, {
   onEachFeature: onEachAlert
 }).addTo(map);
 
-async function loadAlerts(){
-  const url = "https://api.weather.gov/alerts/active?status=actual&message_type=alert&limit=500";
+async function loadAlerts() {
+  const url = "https://api.weather.gov/alerts/active";
+
   try {
-    const res = await fetch(url, {
-      headers: {
-        "Accept": "application/geo+json",
-        "User-Agent": "PurnaSaud (purnasaud3@gmail.com)"
-      }
-    });
+    const res = await fetch(url);
     const gj = await res.json();
+
     alertsLayer.clearLayers();
     alertsLayer.addData(gj);
+
     statusEl.textContent = `Active alerts: ${gj.features?.length || 0}`;
-  } catch(err){
+  } catch (err) {
     console.error(err);
     statusEl.textContent = "Failed to load alerts (see console).";
   }
 }
+
 
 loadAlerts();
 
