@@ -83,19 +83,24 @@ const alertsLayer = L.geoJSON(null, {
 }).addTo(map);
 
 async function loadAlerts(){
-  const url = 'https://api.weather.gov/alerts/active?status=actual&message_type=alert&limit=500';
-  statusEl.textContent = 'Fetching NWS alerts…';
-  try{
-    const res = await fetch(url, {headers:{'Accept':'application/geo+json'}});
+  const url = "https://api.weather.gov/alerts/active?status=actual&message_type=alert&limit=500";
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "Accept": "application/geo+json",
+        "User-Agent": "PurnaSaud (purnasaud3@gmail.com)"
+      }
+    });
     const gj = await res.json();
     alertsLayer.clearLayers();
     alertsLayer.addData(gj);
-    statusEl.textContent = `Active alerts: ${gj.features?.length || 0} • Updated ${new Date().toLocaleTimeString()}`;
-  }catch(err){
+    statusEl.textContent = `Active alerts: ${gj.features?.length || 0}`;
+  } catch(err){
     console.error(err);
-    statusEl.textContent = 'Failed to load alerts (check console).';
+    statusEl.textContent = "Failed to load alerts (see console).";
   }
 }
+
 loadAlerts();
 
 // Base + overlay controls
