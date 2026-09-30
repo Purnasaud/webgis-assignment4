@@ -1,19 +1,26 @@
 // BONUS: unified map with toggles
 const statusEl = document.getElementById('status');
 
-const base_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 20,
-  attribution: '&copy; OpenStreetMap, &copy; CARTO'
+// Basemaps. CARTO's anonymous tile endpoints now require an API key and serve
+// watermarked tiles instead, so these use Esri's keyless Canvas services.
+// NOTE: Esri tile URLs are {z}/{y}/{x}, not {z}/{x}/{y}.
+const base_Light = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 19, maxNativeZoom: 16,   // service tops out at 16; Leaflet upscales past it
+  attribution: 'Tiles &copy; Esri'
 });
-const base_Dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 20,
-  attribution: '&copy; OpenStreetMap, &copy; CARTO'
+const base_Dark = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 19, maxNativeZoom: 16,
+  attribution: 'Tiles &copy; Esri'
+});
+const base_OSM = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
 const map = L.map('map', {
   center:[37.8,-96],
   zoom:4,
-  layers:[base_Positron],
+  layers:[base_Light],
   worldCopyJump:true
 });
 
@@ -59,66 +66,97 @@ const quakes = L.geoJSON(null,{
 let alertCount = 0;
 let quakeCount = 0;
 
+// Track which view the toggle is showing, and whether each feed actually loaded.
+// Without this the status line can report the wrong layer's count, or report
+// "0" when a feed failed — which reads as "no active hazards" rather than "no data".
+let currentView = 'weather';
+let alertFailed = false;
+let quakeFailed = false;
+
+function updateStatus(){
+  if(currentView === 'quakes'){
+    statusEl.textContent = quakeFailed
+      ? 'Earthquake feed unavailable'
+      : `Earthquakes (24h): ${quakeCount}`;
+  } else {
+    statusEl.textContent = alertFailed
+      ? 'Alert feed unavailable'
+      : `Active alerts: ${alertCount}`;
+  }
+}
+
 // Loaders
 async function loadAlerts() {
   const url = "https://api.weather.gov/alerts/active";
   try {
     const res = await fetch(url, { headers: { "Accept": "application/geo+json" } });
+    if(!res.ok) throw new Error(`NWS alerts API returned ${res.status}`);
     const gj = await res.json();
     alerts.clearLayers();
     alerts.addData(gj);
     alertCount = gj.features?.length || 0;
+    alertFailed = false;
   } catch (err) {
     console.error(err);
     alertCount = 0;
+    alertFailed = true;
   }
 }
 
 async function loadQuakes(){
   try {
     const url='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';
-    const res=await fetch(url); const gj=await res.json(); 
+    const res=await fetch(url);
+    if(!res.ok) throw new Error(`USGS feed returned ${res.status}`);
+    const gj=await res.json();
     quakes.clearLayers(); quakes.addData(gj);
     quakeCount = gj.features?.length || 0;
+    quakeFailed = false;
   } catch (err){
     console.error(err);
     quakeCount = 0;
+    quakeFailed = true;
   }
 }
 
 async function init(){
   statusEl.textContent='Loading alerts and earthquakes…';
   await Promise.all([loadAlerts(), loadQuakes()]);
-  // After load, default to weather alerts display
-  statusEl.textContent = `Active alerts: ${alertCount}`;
+  // Report whichever view the user is actually looking at by now.
+  updateStatus();
 }
 init();
 
 // Layer control
-const baseLayers = {'Light (Positron)':base_Positron,'Dark':base_Dark};
+const baseLayers = {'Light Gray (Esri)':base_Light,'Dark Gray (Esri)':base_Dark,'OSM Standard':base_OSM};
 const overlays = {'NEXRAD Radar (WMS)':radarWMS,'NWS Alerts':alerts,'Earthquakes':quakes};
 L.control.layers(baseLayers, overlays, {collapsed:true}).addTo(map);
 
-// Custom toggle control 
+// Custom toggle control
 const Toggle = L.Control.extend({
   onAdd: function(){
     const container = L.DomUtil.create('div'); container.className = 'toggle';
     const btnWeather = L.DomUtil.create('button','',container); btnWeather.textContent='Weather Alerts';
     const btnQuakes  = L.DomUtil.create('button','',container); btnQuakes.textContent='Earthquakes';
 
+    // Keep clicks on the buttons from panning the map underneath them.
+    L.DomEvent.disableClickPropagation(container);
+
     function showWeather(){
       btnWeather.classList.add('active'); btnQuakes.classList.remove('active');
       if(!map.hasLayer(alerts)) alerts.addTo(map);
       if(!map.hasLayer(radarWMS)) radarWMS.addTo(map);
       if(map.hasLayer(quakes)) map.removeLayer(quakes);
-      statusEl.textContent = `Active alerts: ${alertCount}`;
+      currentView = 'weather';
+      updateStatus();
     }
     function showQuakes(){
       btnQuakes.classList.add('active'); btnWeather.classList.remove('active');
       if(!map.hasLayer(quakes)) quakes.addTo(map);
       if(map.hasLayer(alerts)) map.removeLayer(alerts);
       if(map.hasLayer(radarWMS)) map.removeLayer(radarWMS);
-      statusEl.textContent = `Earthquakes (24h): ${quakeCount}`;
+      currentView = 'quakes';
+      updateStatus();
     }
     btnWeather.onclick = (e)=>{ e.preventDefault(); showWeather(); };
     btnQuakes.onclick  = (e)=>{ e.preventDefault(); showQuakes();  };
