@@ -1,25 +1,27 @@
-
 // WEATHER MAP
 const statusEl = document.getElementById('status');
 
 // Base maps
-const base_OSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+const base_OSM = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors'
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
-const base_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 20,
-  attribution: '&copy; OpenStreetMap, &copy; CARTO'
+// CARTO's anonymous tile endpoints now require an API key and serve watermarked
+// tiles instead of failing, so these use Esri's keyless Canvas services.
+// NOTE: Esri tile URLs are {z}/{y}/{x}, not {z}/{x}/{y}.
+const base_Light = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 19, maxNativeZoom: 16,   // service tops out at 16; Leaflet upscales past it
+  attribution: 'Tiles &copy; Esri'
 });
-const base_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 20,
-  attribution: '&copy; OpenStreetMap, &copy; CARTO'
+const base_DarkGray = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 19, maxNativeZoom: 16,
+  attribution: 'Tiles &copy; Esri'
 });
 
 const map = L.map('map', {
   center: [39.5, -98.5], // US centroid
   zoom: 5,
-  layers: [base_Positron],
+  layers: [base_Light],
   zoomControl: true,
   worldCopyJump: true
 });
@@ -86,7 +88,10 @@ async function loadAlerts() {
   const url = "https://api.weather.gov/alerts/active";
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: { "Accept": "application/geo+json" } });
+    // fetch() does not throw on 404/500 — it hands back an error page that
+    // res.json() would choke on further down. Fail here instead.
+    if(!res.ok) throw new Error(`NWS alerts API returned ${res.status}`);
     const gj = await res.json();
 
     alertsLayer.clearLayers();
@@ -104,8 +109,8 @@ loadAlerts();
 
 // Base + overlay controls
 const baseLayers = {
-  'CARTO Positron (light)': base_Positron,
-  'CARTO Dark Matter': base_DarkMatter,
+  'Light Gray (Esri)': base_Light,
+  'Dark Gray (Esri)': base_DarkGray,
   'OSM Standard': base_OSM
 };
 const overlays = {
